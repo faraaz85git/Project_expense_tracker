@@ -1,5 +1,4 @@
 import bcrypt
-
 from db_layer.myutils import Account_manager
 from db_layer.database_manager import database_manager
 
@@ -21,9 +20,6 @@ class Auth:
                 return None
         else:
             return None
-
-
-
 
 
     def sign_up1(self,username, password,role):

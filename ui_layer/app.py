@@ -1,118 +1,121 @@
 from business_layer.Auth import Auth
-from business_layer.user import User,Admin
+from business_layer.user import User
 from db_layer.connection import close_connection
+from ui_layer.user_menu import user_menu
+from business_layer.Admin import Admin
+from ui_layer.admin_menu import admin_menu
 
 logged_in=False
 
-def user_menu(user):
-    while True:
-        user_choice = f'''
---------------------------------------------------------
-              Welcome {user.username}.
---------------------------------------------------------
-enter your choice:
-1.Add my expense
-2.Show all my expenses
-3.Update my expense
-4.Delete my expense
-5.Show my expense by category
-6.set budget category-wise
-7.Show budget status by category
-8.Plot my expense
-9.for quit(logout)
-'''
-        user_input = input(user_choice)
-        if user_input == '1':
-            user.add_expense1()
+# def user_menu(user):
+#     while True:
+#         user_choice = f'''
+# --------------------------------------------------------
+#               Welcome {user.username}.
+# --------------------------------------------------------
+# enter your choice:
+# 1.Add my expense
+# 2.Show all my expenses
+# 3.Update my expense
+# 4.Delete my expense
+# 5.Show my expense by category
+# 6.set budget category-wise
+# 7.Show budget status by category
+# 8.Plot my expense
+# 9.for quit(logout)
+# '''
+#         user_input = input(user_choice)
+#         if user_input == '1':
+#             user.add_expense1()
+#
+#         elif user_input == '2':
+#             user.show_all_expense1()
+#
+#         elif user_input == '3':
+#             user.update_expense1()
+#
+#         elif user_input == '4':
+#             user.delete_expense1()
+#
+#         elif user_input == '5':
+#             user.show_expense_by_category1()
+#
+#         elif user_input == '6':
+#             user.set_budget_by_category1()
+#
+#         elif user_input == '7':
+#             user.show_budget_status_by_category1()
+#
+#         elif user_input=='8':
+#             user.plot_expense1()
+#
+#         elif user_input == '9':
+#             break
+#         else:
+#             print('wrong input')
+#     main_menu()
 
-        elif user_input == '2':
-            user.show_all_expense1()
-
-        elif user_input == '3':
-            user.update_expense1()
-
-        elif user_input == '4':
-            user.delete_expense1()
-
-        elif user_input == '5':
-            user.show_expense_by_category1()
-
-        elif user_input == '6':
-            user.set_budget_by_category1()
-
-        elif user_input == '7':
-            user.show_budget_status_by_category1()
-
-        elif user_input=='8':
-            user.plot_expense1()
-
-        elif user_input == '9':
-            break
-        else:
-            print('wrong input')
-    main_menu()
-
-def admin_menu(user):
-    while True:
-        user_choice = f'''
---------------------------------------------------------
-               Welcome {user.username}
---------------------------------------------------------
-enter your choice:
-1.Add my expense
-2.Show all my expense
-3.Update my expense
-4.Delete my expense
-5.Show my expense by category
-6.set budget categorywise
-8.Plot your expense
-9.show all user
-10.show all user expense
-11.Delete user
-12.for quit(logout)
-'''
-        user_input = input(user_choice)
-        if user_input == '1':
-            user.add_expense1()
-
-        elif user_input == '2':
-            data=user.show_all_expense1()
-            if not data:
-                print('No expense')
-
-        elif user_input == '3':
-            user.update_expense1()
-
-        elif user_input == '4':
-            user.delete_expense1()
-
-        elif user_input == '5':
-            user.show_expense_by_category1()
-
-        elif user_input == '6':
-            user.set_budget_by_category1()
-
-        elif user_input == '7':
-            user.show_budget_status_by_category1()
-
-        elif user_input == '8':
-            user.plot_expense1()
-
-        elif user_input == '9':
-            user.show_all_user1()
-
-        elif user_input=='10':
-            user.show_all_users_expenses1()
-
-        elif user_input == '11':
-            user.delete_user1()
-
-
-        elif user_input == '12':
-            break
-        else:
-            print('wrong input')
-    main_menu()
+# def admin_menu(user,main_menu):
+#     while True:
+#         user_choice = f'''
+# --------------------------------------------------------
+#                Welcome {user.username}
+# --------------------------------------------------------
+# enter your choice:
+# 1.Add my expense
+# 2.Show all my expense
+# 3.Update my expense
+# 4.Delete my expense
+# 5.Show my expense by category
+# 6.set budget categorywise
+# 8.Plot your expense
+# 9.show all user
+# 10.show all user expense
+# 11.Delete user
+# 12.for quit(logout)
+# '''
+#         user_input = input(user_choice)
+#         if user_input == '1':
+#             user.add_expense1()
+#
+#         elif user_input == '2':
+#             data=user.show_all_expense1()
+#             if not data:
+#                 print('No expense')
+#
+#         elif user_input == '3':
+#             user.update_expense1()
+#
+#         elif user_input == '4':
+#             user.delete_expense1()
+#
+#         elif user_input == '5':
+#             user.show_expense_by_category1()
+#
+#         elif user_input == '6':
+#             user.set_budget_by_category1()
+#
+#         elif user_input == '7':
+#             user.show_budget_status_by_category1()
+#
+#         elif user_input == '8':
+#             user.plot_expense1()
+#
+#         elif user_input == '9':
+#             user.show_all_user1()
+#
+#         elif user_input=='10':
+#             user.show_all_users_expenses1()
+#
+#         elif user_input == '11':
+#             user.delete_user1()
+#
+#
+#         elif user_input == '12':
+#             break
+#         else:
+#             print('wrong input')
+#     main_menu()
 
 def handle_login():
     username = input('enter username:').strip()
@@ -121,13 +124,13 @@ def handle_login():
         auth_obj=Auth()
         user_data=auth_obj.login1(username,password)
         if user_data:
-            print('login sucessful')
+            print('login successful')
             if user_data[2]=='user':
                 user=User(user_data[0],user_data[1],user_data[2])
-                user_menu(user)
+                user_menu(user,main_menu)
             else:
                 user = Admin(user_data[0], user_data[1], user_data[2])
-                admin_menu(user)
+                admin_menu(user,main_menu,user_menu)
         else:
             print('Invlaid username and password')
             main_menu()

@@ -302,6 +302,7 @@ class Budget_manager:
 
 
 
+'''-------------------------utility functions----------------------------------'''
 
 def get_float_input(prompt):
         value = input(prompt).strip()
@@ -314,7 +315,6 @@ def get_float_input(prompt):
             print(f"An error occurred: {e}.")
             return get_float_input(prompt)
 
-'''-------------------------utility functions----------------------------------'''
 def get_date_input(prompt):
     user_input = input(prompt).strip()
 
@@ -405,3 +405,27 @@ def verify_password(stored_hash, password):
     # Verify that the provided password matches the stored hash
     return bcrypt.checkpw(password.encode('utf-8'), stored_hash)
 
+
+def display(expense_data):
+    print(f"{'expense_id':<15} {'date':<15} {'category':<15} {'amount':<15} {'description':<15}")
+    print('-' * 80)
+    for data in expense_data:
+        expense_id, date, category, amount, description = data
+        print(f"{expense_id:<15} {date:<15} {category:<15} {amount:<15} {description:<100}")
+
+
+def display_budget_status(budget_amount,amount_spend):
+    budget_status = {
+        'housing': budget_amount['housing'] - amount_spend['housing'],
+        'transport': budget_amount['transport'] - amount_spend['transport'],
+        'food': budget_amount['food'] - amount_spend['food'],
+        'clothing': budget_amount['clothing'] - amount_spend['clothing'],
+        'other': budget_amount['other'] - amount_spend['other']
+    }
+    print(f'{'Category':<9} {'Budget':>15} {'Spend':>15} {'Remaining':>15}')
+    print('-' * 60)
+    print(f'{'Housing':<9} {budget_amount['housing']:>15} {amount_spend['housing']:>15} {budget_status['housing']:>15}')
+    print(f'{'Transport':<9} {budget_amount['transport']:>15} {amount_spend['transport']:>15} {budget_status['transport']:>15}')
+    print(f'{'Food':<9} {budget_amount['food']:>15} {amount_spend['food']:>15} {budget_status['food']:>15}')
+    print(f'{'Clothing':<9} {budget_amount['clothing']:>15} {amount_spend['clothing']:>15} {budget_status['clothing']:>15}')
+    print(f'{'Other':<9} {budget_amount['other']:>15} {amount_spend['other']:>15} {budget_status['other']:>15}')

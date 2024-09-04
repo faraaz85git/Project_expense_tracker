@@ -72,10 +72,12 @@ class database_manager:
                 if cursor.rowcount!=0:
                     return True
                 else:
+                    print('No record found with given id.')
                     return False
 
             except Exception as e:
-                print(f'SQLite error, {e}')
+                # print(f'SQLite error, {e}')
+                print('An error has occured.')
                 return False
         else:
             print('-------No data is provided to update-------')
@@ -95,8 +97,10 @@ class database_manager:
             if cursor.rowcount!=0:
                 return True
             else:
+                print('No record found with given id.')
                 return False
 
         except Exception as e:
-            print(f'SQLite error, {e}')
+            print('An error occured.')
+            # print(f'SQLite error, {e}')
             return False
