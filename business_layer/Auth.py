@@ -24,16 +24,7 @@ class Auth:
 
 
 
-    def login(self, username, password):
-        self.user_db.create_user_table()
-        data=self.user_db.login(username,password)
-        if data:
-            if password==data[1]:
-                return data
-            else:
-                return None
-        else:
-            return None
+
 
     def sign_up1(self,username, password,role):
         table_name='users'
@@ -52,9 +43,6 @@ class Auth:
                 return False
 
 
-    def sign_up(self, username, password,role):
-       self.user_db.create_user_table()
-       result=self.user_db.sign_up(username,password,role)
-       return result
+
 
 

@@ -54,7 +54,7 @@ class TestAuth:
 
         assert result==False
 
-    def test_sign_up1_username_not_exists(self,monkeypatch):
+    def test_sign_up1_username_not_exists_inserted(self,monkeypatch):
         self.db_manager.fetch_data = MagicMock(return_value=[])
         self.db_manager.insert_data=MagicMock(return_value=True)
         self.mock_bcrypt=MagicMock()
@@ -66,6 +66,21 @@ class TestAuth:
 
         assert result == True
 
-    
+    def test_sign_up1_username_not_exists_not_inserted(self,monkeypatch):
+        self.db_manager.fetch_data = MagicMock(return_value=[])
+        self.db_manager.insert_data=MagicMock(return_value=False)
+        self.mock_bcrypt=MagicMock()
+        monkeypatch.setattr('business_layer.Auth.database_manager', lambda: self.db_manager)
+        monkeypatch.setattr('bcrypt.hashpw',self.mock_bcrypt)
+
+        auth_obj = Auth()
+        result = auth_obj.sign_up1('username', 'password', 'role')
+
+        assert result == False
+
+
+
+
+
 
 

@@ -7,7 +7,6 @@ role TEXT NOT NULL)
 '''
 
 
-expense_table_name='expenses'
 expenses_schema = """
 expense_id INTEGER PRIMARY KEY AUTOINCREMENT,
 username TEXT NOT NULL,
@@ -35,3 +34,5 @@ end_date DATE NOT NULL)
 def create_table(table_name, schema):
         create_table_sql = f"CREATE TABLE IF NOT EXISTS {table_name} {schema}"
         print(create_table_sql)
+
+

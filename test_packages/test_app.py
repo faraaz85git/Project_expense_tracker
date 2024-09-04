@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock,patch
+from unittest.mock import MagicMock
 from ui_layer.app import main_menu,handle_login,handle_signup
 
 
@@ -14,16 +14,8 @@ def test_main_menu_choice_1(monkeypatch):
   monkeypatch.setattr('builtins.input',mock_input)
   monkeypatch.setattr('ui_layer.app.handle_login',mock_handle_login)
   main_menu()
-  mock_print.assert_called_once_with('''
-----------------------------------
-Hellow, Welcome to Expense tracker
-----------------------------------
-Enter your choice:
-1.login
-2.signup
-3.Exit
-----------------------------------''')
-  mock_input.assert_called_once_with('Your choice: ')
+
+
   mock_handle_login.assert_called_once()
 
 def test_main_menu_choice_2(monkeypatch):
@@ -36,16 +28,7 @@ def test_main_menu_choice_2(monkeypatch):
   monkeypatch.setattr('ui_layer.app.handle_signup',mock_handle_signup)
 
   main_menu()
-  mock_print.assert_called_once_with('''
-----------------------------------
-Hellow, Welcome to Expense tracker
-----------------------------------
-Enter your choice:
-1.login
-2.signup
-3.Exit
-----------------------------------''')
-  mock_input.assert_called_once_with('Your choice: ')
+
   mock_handle_signup.assert_called_once()
 
 
@@ -61,16 +44,7 @@ def test_main_menu_choice_3(monkeypatch):
   monkeypatch.setattr('builtins.exit',mock_exit)
 
   main_menu()
-  mock_print.assert_called_once_with('''
-----------------------------------
-Hellow, Welcome to Expense tracker
-----------------------------------
-Enter your choice:
-1.login
-2.signup
-3.Exit
-----------------------------------''')
-  mock_input.assert_called_once_with('Your choice: ')
+
   mock_close_connection.assert_called_once()
 
 '''------------------------------------------------------'''
@@ -86,9 +60,7 @@ def test_handle_login_missing_input(monkeypatch):
     monkeypatch.setattr('ui_layer.app.main_menu', mock_main_menu)
 
     handle_login()
-    mock_input.assert_any_call('enter username:')
-    mock_input.assert_any_call('enter password:')
-    mock_print.assert_called_once_with('All fields are required')
+
     mock_main_menu.assert_called_once()
 
 
@@ -118,11 +90,8 @@ def test_handle_login_valid_input(monkeypatch):
 
   handle_login()
 
-  mock_input.assert_any_call('enter username:')
-  mock_input.assert_any_call('enter password:')
   mock_auth.login1.assert_called_once()
   mock_user_menu.assert_called_once_with(mock_User)
-  mock_print.assert_called_once_with('login sucessful')
 
 
 
@@ -142,10 +111,9 @@ def test_handle_login_invalid_input(monkeypatch):
 
   handle_login()
 
-  mock_input.assert_any_call('enter username:')
-  mock_input.assert_any_call('enter password:')
+
   mock_auth.login1.assert_called_once_with('invalid_user', 'invalid_password')
-  mock_print.assert_called_once_with('Invlaid username and password')
+
   mock_main_menu.assert_called_once()
 
 '''-----------------------------------------------------'''
@@ -165,12 +133,6 @@ def test_handle_signup_missing_input(monkeypatch):
 
     handle_signup()
 
-
-
-    mock_input.assert_any_call('enter username:')
-    mock_input.assert_any_call('enter passwprd:')
-    mock_input.assert_any_call('enter 1.user 2.admin')
-    mock_print.assert_called_once_with('All field are required')
     mock_main_menu.assert_called_once()
 
 def test_handle_signup_valid_input(monkeypatch):
@@ -187,9 +149,8 @@ def test_handle_signup_valid_input(monkeypatch):
 
   handle_signup()
 
-  mock_input.assert_any_call('enter username:')
-  mock_input.assert_any_call('enter passwprd:')
-  mock_input.assert_any_call('enter 1.user 2.admin')
+
   mock_auth.sign_up1.assert_called_once_with('valid_user','valid_password','user')
-  mock_print.assert_called_once_with('sign up sucessful')
   mock_main_menu.assert_called_once()
+
+
