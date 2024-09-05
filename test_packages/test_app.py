@@ -64,7 +64,7 @@ def test_handle_login_missing_input(monkeypatch):
     mock_main_menu.assert_called_once()
 
 
-def test_handle_login_valid_input(monkeypatch):
+def test_handle_login_valid_input_user(monkeypatch):
   mock_input = MagicMock(side_effect=['Valid_user', 'valid_password'])
 
 
@@ -91,7 +91,37 @@ def test_handle_login_valid_input(monkeypatch):
   handle_login()
 
   mock_auth.login1.assert_called_once()
-  mock_user_menu.assert_called_once_with(mock_User)
+  mock_user_menu.assert_called_once_with(mock_User,mock_main_menu)
+
+def test_handle_login_valid_input_admin(monkeypatch):
+  mock_input = MagicMock(side_effect=['Valid_user', 'valid_password'])
+
+
+  mock_auth = MagicMock()
+  mock_auth.login1=MagicMock(return_value=('valid_user', 'valid_password', 'admin'))
+
+  mock_print = MagicMock()
+  mock_User = MagicMock()
+
+  mock_Admin = MagicMock()
+  mock_user_menu = MagicMock()
+  mock_admin_menu = MagicMock()
+  mock_main_menu = MagicMock()
+
+  monkeypatch.setattr('builtins.input', mock_input)
+  monkeypatch.setattr('builtins.print', mock_print)
+  monkeypatch.setattr('ui_layer.app.Auth', lambda: mock_auth)
+  monkeypatch.setattr('ui_layer.app.User', lambda *args: mock_User)
+  monkeypatch.setattr('ui_layer.app.Admin', lambda *args: mock_Admin)
+  monkeypatch.setattr('ui_layer.app.admin_menu', mock_admin_menu)
+  monkeypatch.setattr('ui_layer.app.user_menu',mock_user_menu)
+  monkeypatch.setattr('ui_layer.app.main_menu', mock_main_menu)
+
+
+  handle_login()
+
+  mock_auth.login1.assert_called_once()
+  mock_admin_menu.assert_called_once_with(mock_Admin,mock_main_menu,mock_user_menu)
 
 
 
