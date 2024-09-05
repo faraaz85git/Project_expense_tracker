@@ -2,29 +2,22 @@ from db_layer.myutils import ask_category,update_category,get_float_input,get_da
 import matplotlib.pyplot as plt
 from db_layer.database_manager import database_manager
 from business_layer.Budget import Budget
+from business_layer.Expense import Expense
 class User:
     def __init__(self,username,password,role):
         self.username=username
         self.password=password
         self.role=role
+        self.expense=Expense()
         self.db_manager=database_manager()
 
     def add_expense1(self,date,category,amount,description):
                 username = self.username
-                table_name='expenses'
-                column=['username','date','category','amount','description']
-                values=[username,date,category,amount,description]
-                result=self.db_manager.insert_data(table_name,column,values)
+                result=self.expense.add_expense(username,date,category,amount,description)
                 return result
 
     def show_all_expense2(self):
-        table_name = 'expenses'
-        columns = ['expense_id', 'date', 'category', 'amount', 'description']
-        condition = ['username=?']
-        data = self.db_manager.fetch_data(table_name,
-                                          columns=columns,
-                                          where_clause=condition,
-                                          parameters=[self.username])
+        data=self.expense.get_expense(self.username)
         return data
 
     def update_expense2(self,expense_id):
@@ -36,31 +29,11 @@ class User:
             'description': input("New description: ").strip()
         }
 
-        if filters['amount']:
-            try:
-                filters['amount'] = float(filters['amount'])
-            except ValueError:
-                print("Invalid amount entered. It must be a number.")
-                filters['amount'] = None
-
-        filters = {key: value for key, value in filters.items() if bool(value)}
-        condition = ['username=?', 'expense_id=?']
-        parameter = [self.username, expense_id]
-        result = self.db_manager.update_data(table_name='expenses',
-                                             updates=filters, conditions=condition,
-                                             parameters=parameter)
+        result=self.expense.update_expense(self.username,filters,expense_id)
         return result
 
     def delete_expense2(self,expense_id):
-        table_name = 'expenses'
-        condition = ['expense_id=? ', 'username=?']
-        result = self.db_manager.delete_data(table_name=table_name, conditions=condition,
-                                             parameters=[expense_id, self.username])
-        if result:
-            print("Deletion sucessfull")
-        else:
-            print("Try again")
-
+        self.expense.delete_expense(self.username,expense_id)
 
     def show_expense_by_category2(self,filters):
         if not filters:
@@ -119,20 +92,6 @@ class User:
 
         else:
             print('------NO BUDGET TO SHOW BUDGET STATUS------')
-    # def plot_expense2(self):
-    #     category_expense = {
-    #         'housing': 0,
-    #         'transport': 0,
-    #         'food': 0,
-    #         'clothing': 0,
-    #         'other': 0
-    #     }
-    #     data=self.show_all_expense2()
-    #     if data:
-    #         for d in data:
-    #             category_expense[d[]] += expense
-    #     else:
-    #         print('No data to plot')
 
     def plot_expense1(self):
         colors = ['#A4D3EE', '#FFB347', '#BFD8B8', '#F4A460', '#D8BFD8']
@@ -174,7 +133,7 @@ class User:
             prev_budget=budget.latest_budget(self.username)
             if prev_budget:
                 prev_budget_end_date = prev_budget[6]
-                budget.set_budget(self.username,prev_budget_end_date)
+                budget.set_budget(self.username,prev_budget_end_date=prev_budget_end_date)
 
             else:
                 print("You don't have any budget.Please set a budget.")
