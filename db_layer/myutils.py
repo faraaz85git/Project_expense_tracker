@@ -2,6 +2,8 @@ import sqlite3
 from datetime import datetime
 from db_layer.connection import get_connection
 import bcrypt
+import matplotlib.pyplot as plt
+
 class Account_manager:
     def __init__(self):
         self.connection=get_connection()
@@ -387,10 +389,6 @@ def get_int_input(promt='enter an integer value.'):
         print('Enter a valid intger.')
         get_int_input(promt)
 
-
-
-
-
 def hash_password(password):
     # Generate a salt
     salt = bcrypt.gensalt()
@@ -400,11 +398,9 @@ def hash_password(password):
 
     return hashed_password
 
-
 def verify_password(stored_hash, password):
     # Verify that the provided password matches the stored hash
     return bcrypt.checkpw(password.encode('utf-8'), stored_hash)
-
 
 def display(expense_data):
     print(f"{'expense_id':<15} {'date':<15} {'category':<15} {'amount':<15} {'description':<15}")
@@ -412,7 +408,6 @@ def display(expense_data):
     for data in expense_data:
         expense_id, date, category, amount, description = data
         print(f"{expense_id:<15} {date:<15} {category:<15} {amount:<15} {description:<100}")
-
 
 def display_budget_status(budget_amount,amount_spend):
     budget_status = {
@@ -429,3 +424,13 @@ def display_budget_status(budget_amount,amount_spend):
     print(f'{'Food':<9} {budget_amount['food']:>15} {amount_spend['food']:>15} {budget_status['food']:>15}')
     print(f'{'Clothing':<9} {budget_amount['clothing']:>15} {amount_spend['clothing']:>15} {budget_status['clothing']:>15}')
     print(f'{'Other':<9} {budget_amount['other']:>15} {amount_spend['other']:>15} {budget_status['other']:>15}')
+
+# def plot(share,labels):
+#     colors = ['#A4D3EE', '#FFB347', '#BFD8B8', '#F4A460', '#D8BFD8']
+#     color = colors[:len(labels)]
+#     plt.pie(share, labels=labels, colors=color, startangle=0, shadow=False,
+#             explode=(0.1, 0.1, 0.1, 0.1, 0.1)[:len(labels)],
+#             radius=1.2, autopct='%1.1f%%')
+#
+#     plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+#     plt.show()

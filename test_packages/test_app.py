@@ -153,4 +153,3 @@ def test_handle_signup_valid_input(monkeypatch):
   mock_auth.sign_up1.assert_called_once_with('valid_user','valid_password','user')
   mock_main_menu.assert_called_once()
 
-

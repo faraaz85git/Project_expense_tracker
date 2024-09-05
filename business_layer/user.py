@@ -1,4 +1,4 @@
-from db_layer.myutils import ask_category,update_category,get_float_input,get_date_input,curr_date_str
+from db_layer.myutils import ask_category,update_category,get_float_input,get_date_input,curr_date_str,display
 import matplotlib.pyplot as plt
 from db_layer.database_manager import database_manager
 from business_layer.Budget import Budget
@@ -74,11 +74,7 @@ class User:
             if data:
                 expense_data=[e for e in data if e[2] in filters.keys()]
                 if expense_data:
-                    print(f"{'expense_id':<15} {'date':<15} {'category':<15} {'amount':<15} {'description':<15}")
-                    print('-' * 80)
-                    for data in expense_data:
-                        expense_id, date, category, amount, description = data
-                        print(f"{expense_id:<15} {date:<15} {category:<15} {amount:<15} {description:<100}")
+                    display(expense_data)
                 else:
                     print('------No data for specified category------')
 
@@ -123,6 +119,20 @@ class User:
 
         else:
             print('------NO BUDGET TO SHOW BUDGET STATUS------')
+    # def plot_expense2(self):
+    #     category_expense = {
+    #         'housing': 0,
+    #         'transport': 0,
+    #         'food': 0,
+    #         'clothing': 0,
+    #         'other': 0
+    #     }
+    #     data=self.show_all_expense2()
+    #     if data:
+    #         for d in data:
+    #             category_expense[d[]] += expense
+    #     else:
+    #         print('No data to plot')
 
     def plot_expense1(self):
         colors = ['#A4D3EE', '#FFB347', '#BFD8B8', '#F4A460', '#D8BFD8']

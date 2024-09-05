@@ -39,22 +39,14 @@ enter your choice:
         elif user_input == '2':
             data=user.show_all_expense2()
             if data:
-                print(f"{'expense_id':<15} {'date':<15} {'category':<15} {'amount':<15} {'description':<15}")
-                print('-' * 80)
-                for e in data:
-                    expense_id, date, category, amount, description = e
-                    print(f"{expense_id:<15} {date:<15} {category:<15} {amount:<15} {description:<100}")
+                display(data)
             else:
                 print('No data to show')
 
         elif user_input == '3':
             data = user.show_all_expense2()
             if data:
-                print(f"{'expense_id':<15} {'date':<15} {'category':<15} {'amount':<15} {'description':<15}")
-                print('-' * 80)
-                for e in data:
-                    expense_id, date, category, amount, description = e
-                    print(f"{expense_id:<15} {date:<15} {category:<15} {amount:<15} {description:<100}")
+                display(data)
                 try:
                     expense_id=int(input('Enter a valid expense id to update expense'))
                     result=user.update_expense2(expense_id)
@@ -71,11 +63,7 @@ enter your choice:
         elif user_input == '4':
             data=user.show_all_expense2()
             if data:
-                print(f"{'expense_id':<15} {'date':<15} {'category':<15} {'amount':<15} {'description':<15}")
-                print('-' * 80)
-                for e in data:
-                    expense_id, date, category, amount, description = e
-                    print(f"{expense_id:<15} {date:<15} {category:<15} {amount:<15} {description:<100}")
+                display(data)
                 try:
                     expense_id = int(input('Enter a valid id of an expense to be deleted').strip())
                     user.delete_expense2(expense_id)
