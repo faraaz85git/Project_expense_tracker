@@ -119,7 +119,7 @@ class User:
                 'other': budget_amount['other'] - amount_spend['other']
             }
 
-            return [budget_amount,amount_spend,budget_status]
+            return [budget_amount,amount_spend]
 
         else:
             print('------NO BUDGET TO SHOW BUDGET STATUS------')

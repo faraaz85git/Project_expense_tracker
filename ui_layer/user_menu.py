@@ -100,7 +100,8 @@ enter your choice:
 
         elif user_input == '7':
             data=user.show_budget_status_by_category2()
-            display_budget_status(data[0],data[1])
+            if data:
+                display_budget_status(data[0],data[1])
 
         elif user_input=='8':
             user.plot_expense1()
