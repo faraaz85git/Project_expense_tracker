@@ -10,7 +10,8 @@ class database_manager:
             cursor.execute(query)
             self.connection.commit()
         except Exception as e:
-            print(f'SQLite error, {e}')
+            # print(f'SQLite error, {e}')
+            print("An error occurred.")
 
     def fetch_data(self,table_name,columns="*",
                    where_clause=None,
@@ -29,7 +30,7 @@ class database_manager:
             data=cursor.fetchall()
             return data
         except Exception as e:
-            print(f'SQLite error, {e}')
+            print("An error occurred.")
             return None
 
     def insert_data(self,table_name,columns,values):
@@ -47,7 +48,8 @@ class database_manager:
             else:
                 return False
         except Exception as e:
-            print(f'SQLite error, {e}')
+            # print(f'SQLite error, {e}')
+            print("An error occurred.")
             return False
 
     def update_data(self,table_name,updates,conditions=None,parameters=[]):

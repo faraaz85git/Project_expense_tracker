@@ -4,7 +4,6 @@ from business_layer.Auth import Auth
 
 class TestAuth:
     def setup_method(self):
-        self.acnt_manager=MagicMock()
         self.db_manager=MagicMock()
 
     def test_login1_valid_credentials(self,monkeypatch):
@@ -12,7 +11,6 @@ class TestAuth:
         self.mock_bcrypt=MagicMock(return_value=True)
 
         monkeypatch.setattr('business_layer.Auth.database_manager',lambda : self.db_manager)
-        monkeypatch.setattr('business_layer.Auth.Account_manager',lambda : self.acnt_manager)
         monkeypatch.setattr('bcrypt.checkpw',self.mock_bcrypt)
 
         auth_obj=Auth()
@@ -26,7 +24,6 @@ class TestAuth:
         self.mock_bcrypt=MagicMock(return_value=False)
 
         monkeypatch.setattr('business_layer.Auth.database_manager', lambda: self.db_manager)
-        monkeypatch.setattr('business_layer.Auth.Account_manager', lambda: self.acnt_manager)
         monkeypatch.setattr('bcrypt.checkpw',self.mock_bcrypt)
 
         auth_obj=Auth()
@@ -38,8 +35,6 @@ class TestAuth:
 
 
         monkeypatch.setattr('business_layer.Auth.database_manager', lambda: self.db_manager)
-        monkeypatch.setattr('business_layer.Auth.Account_manager', lambda: self.acnt_manager)
-
         auth_obj = Auth()
         actual_result = auth_obj.login1('invalid_username', 'valid_password')
         assert actual_result == None

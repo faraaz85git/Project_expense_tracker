@@ -1,10 +1,8 @@
 import bcrypt
-from db_layer.myutils import Account_manager
 from db_layer.database_manager import database_manager
 
 class Auth:
     def __init__(self):
-        self.user_db=Account_manager()
         self.db_manager=database_manager()
 
     def login1(self,username,password):

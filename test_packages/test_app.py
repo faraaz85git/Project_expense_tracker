@@ -7,16 +7,35 @@ from ui_layer.app import main_menu,handle_login,handle_signup
 
 
 def test_main_menu_choice_1(monkeypatch):
-  mock_print=MagicMock()
+  mock_print=MagicMock(return_value=None)
   mock_input=MagicMock(return_value='1')
-  mock_handle_login=MagicMock()
+  mock_handle_login=MagicMock(return_value=None)
+  mock_handle_signup=MagicMock(return_value=None)
+  mock_close_connection=MagicMock(return_value=None)
+  mock_main_menu=MagicMock(return_value=None)
+  mock_exit=MagicMock(return_value=None)
+
   monkeypatch.setattr('builtins.print',mock_print)
   monkeypatch.setattr('builtins.input',mock_input)
   monkeypatch.setattr('ui_layer.app.handle_login',mock_handle_login)
+  monkeypatch.setattr('ui_layer.app.handle_signup',mock_handle_signup)
+  monkeypatch.setattr('ui_layer.app.close_connection',mock_close_connection)
+  monkeypatch.setattr('builtins.exit',mock_exit)
+  monkeypatch.setattr('ui_layer.app.main_menu',mock_main_menu)
+
+
+
   main_menu()
 
-
+  mock_print.assert_called()
+  mock_input.assert_called_once_with('Your choice: ')
   mock_handle_login.assert_called_once()
+  mock_handle_signup.assert_not_called()
+  mock_close_connection.assert_not_called()
+  mock_exit.assert_not_called()
+  mock_main_menu.assert_not_called()
+
+
 
 def test_main_menu_choice_2(monkeypatch):
   mock_print = MagicMock()
@@ -165,10 +184,10 @@ def test_handle_signup_missing_input(monkeypatch):
 
     mock_main_menu.assert_called_once()
 
-def test_handle_signup_valid_input(monkeypatch):
+def test_handle_signup_input_role_1(monkeypatch):
   mock_input=MagicMock(side_effect=['valid_user','valid_password','1'])
   mock_auth=MagicMock()
-  mock_auth.sign_up1=MagicMock(return_values=True)
+  mock_auth.sign_up1=MagicMock(return_value=True)
   mock_print=MagicMock()
   mock_main_menu=MagicMock()
 
@@ -183,3 +202,40 @@ def test_handle_signup_valid_input(monkeypatch):
   mock_auth.sign_up1.assert_called_once_with('valid_user','valid_password','user')
   mock_main_menu.assert_called_once()
 
+
+
+def test_handle_signup_input_role_2(monkeypatch):
+  mock_input=MagicMock(side_effect=['valid_user','valid_password','2'])
+  mock_auth=MagicMock()
+  mock_auth.sign_up1=MagicMock(return_value=True)
+  mock_print=MagicMock()
+  mock_main_menu=MagicMock()
+
+  monkeypatch.setattr('builtins.input',mock_input)
+  monkeypatch.setattr('ui_layer.app.Auth',lambda :mock_auth)
+  monkeypatch.setattr('builtins.print',mock_print)
+  monkeypatch.setattr('ui_layer.app.main_menu',mock_main_menu)
+
+  handle_signup()
+
+
+  mock_auth.sign_up1.assert_called_once_with('valid_user','valid_password','admin')
+  mock_main_menu.assert_called_once()
+
+def test_handle_signup_input_role_2_failed(monkeypatch):
+  mock_input=MagicMock(side_effect=['valid_user','valid_password','2'])
+  mock_auth=MagicMock()
+  mock_auth.sign_up1=MagicMock(return_value=False)
+  mock_print=MagicMock()
+  mock_main_menu=MagicMock()
+
+  monkeypatch.setattr('builtins.input',mock_input)
+  monkeypatch.setattr('ui_layer.app.Auth',lambda :mock_auth)
+  monkeypatch.setattr('builtins.print',mock_print)
+  monkeypatch.setattr('ui_layer.app.main_menu',mock_main_menu)
+
+  handle_signup()
+
+  mock_print.assert_any_call('username exists')
+  mock_auth.sign_up1.assert_called_once_with('valid_user','valid_password','admin')
+  mock_main_menu.assert_called_once()
