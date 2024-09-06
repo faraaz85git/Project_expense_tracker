@@ -1,3 +1,7 @@
+
+myfun=lambda : 1
+
+
 def admin_menu(user,main_menu,user_menu):
     while True:
         option='''
@@ -8,7 +12,7 @@ Enter your choice:
 '''
         choice=input(option)
         if   choice=='1':
-              user_menu(user,lambda : 1)
+              user_menu(user,myfun)
         elif choice=='2':
               while True:
                   admin_function=f'''
