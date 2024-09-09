@@ -22,7 +22,7 @@ class Budget:
                                                  columns=columns,
                                                  where_clause=['username=?'],
                                                  parameters=[username])
-        print(prev_budget)
+        # print(prev_budget)
         if prev_budget:
             prev_budget.sort(key=lambda x: x[6], reverse=True)
             prev_budget = prev_budget[0]

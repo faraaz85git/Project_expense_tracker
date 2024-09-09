@@ -22,7 +22,6 @@ class database_manager:
         if where_clause:
             condition_str=(f'{operator}').join(where_clause)
             query+=f' WHERE {condition_str}'
-
         try:
             cursor=self.connection.cursor()
             cursor.execute(query,parameters)
@@ -30,7 +29,7 @@ class database_manager:
             data=cursor.fetchall()
             return data
         except Exception as e:
-            print("An error occurred.")
+            print(f"An error occurred.")
             return None
 
     def insert_data(self,table_name,columns,values):

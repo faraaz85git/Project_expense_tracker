@@ -55,4 +55,3 @@ class Admin(User):
             return data
         else:
             print('No data to show')
-cd Pyc  

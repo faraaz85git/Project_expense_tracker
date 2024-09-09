@@ -4,12 +4,11 @@ from db_layer.connection import close_connection
 from ui_layer.user_menu import user_menu
 from business_layer.Admin import Admin
 from ui_layer.admin_menu import admin_menu
-
 logged_in=False
-
+import getpass
 def handle_login():
     username = input('enter username:').strip()
-    password = input('enter password:').strip()
+    password = input("Enter password").strip()
     if all([username,password]):
         auth_obj=Auth()
         user_data=auth_obj.login1(username,password)
