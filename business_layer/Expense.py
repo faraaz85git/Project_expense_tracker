@@ -22,20 +22,24 @@ class Expense:
         return data
 
     def update_expense(self,username,filters,expense_id):
-        if filters['amount']:
-            try:
-                filters['amount'] = float(filters['amount'])
-            except ValueError:
-                print("Invalid amount entered. Amount will not be updated.")
-                filters['amount'] = None
+        try:
+            if filters['amount']:
+                try:
+                    filters['amount'] = float(filters['amount'])
+                except ValueError:
+                    print("Invalid amount entered. Amount will not be updated.")
+                    filters['amount'] = None
 
-        filters = {key: value for key, value in filters.items() if bool(value)}
-        condition = ['username=?', 'expense_id=?']
-        parameter = [username, expense_id]
-        result = self.db_manager.update_data(table_name='expenses',
-                                             updates=filters, conditions=condition,
-                                             parameters=parameter)
-        return result
+            filters = {key: value for key, value in filters.items() if bool(value)}
+            condition = ['username=?', 'expense_id=?']
+            parameter = [username, expense_id]
+            result = self.db_manager.update_data(table_name='expenses',
+                                                 updates=filters, conditions=condition,
+                                                 parameters=parameter)
+            return result
+        except Exception as e:
+            print('An error ocurred')
+            return False
 
     def delete_expense(self,username,expense_id):
         table_name = 'expenses'

@@ -4,6 +4,7 @@ from db_layer.connection import close_connection
 from ui_layer.user_menu import user_menu
 from business_layer.Admin import Admin
 from ui_layer.admin_menu import admin_menu
+from db_layer.myutils import validate_username,validate_password
 logged_in=False
 import getpass
 def handle_login():
@@ -28,17 +29,11 @@ def handle_login():
         main_menu()
 
 def handle_signup():
-    username=input('enter username:').strip()
-    password=input('enter passwprd:').strip()
-    role=input('enter 1.user 2.admin').strip()
-    if role=='1':
-        role='user'
-    elif role=='2':
-        role='admin'
-    else:
-        role='user'
+    username=input('enter username (must contain lowercase letter and number): ').strip()
+    password=input('enter password (must contains at least 8 number between 0-9 ): ').strip()
+    role='user'
 
-    if all([username,password,role]):
+    if validate_username(username) and validate_password(password):
         auth_obj = Auth()
         result=auth_obj.sign_up1(username,password,role)
         if result:
@@ -48,7 +43,7 @@ def handle_signup():
             print('username exists')
             main_menu()
     else:
-        print('All field are required')
+        print('Enter username and password in valid format')
         main_menu()
 
 def main_menu():

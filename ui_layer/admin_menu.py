@@ -22,17 +22,16 @@ Enter your choice:
 enter your choice:
 1.Show all users
 2.Show all users expenses
-3.Delete user
-4.Back
+3.Back
 '''
                   user_input=input(admin_function)
                   if user_input=='1':
                       user.show_all_user1()
                   elif user_input=='2':
                       user.show_all_users_expenses1()
-                  elif user_input=='3':
-                      user.delete_user1()
-                  elif user_input=="4":
+                  # elif user_input=='3':
+                  #     user.delete_user1()
+                  elif user_input=="3":
                       break
                   else:
                       print('Wrong input.')
