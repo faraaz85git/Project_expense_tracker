@@ -6,7 +6,6 @@ from business_layer.Admin import Admin
 from ui_layer.admin_menu import admin_menu
 from db_layer.myutils import validate_username,validate_password
 logged_in=False
-import getpass
 def handle_login():
     username = input('enter username:').strip()
     password = input("Enter password").strip()
