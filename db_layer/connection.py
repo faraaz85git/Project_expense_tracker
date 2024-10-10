@@ -1,5 +1,10 @@
 import sqlite3
-connection = sqlite3.connect('Database.db')
+import os
+
+
+project_directory = os.path.dirname(os.path.abspath(__file__))
+ADDRESS = os.path.join(project_directory, 'Database.db')
+connection = sqlite3.connect(ADDRESS)
 currsor = connection.cursor()
 
 def get_connection():

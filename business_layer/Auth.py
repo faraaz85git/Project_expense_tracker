@@ -15,7 +15,6 @@ class Auth:
             if bcrypt.checkpw(password.encode('utf-8'),data[1]):
                 return data
             else:
-
                 return None
         else:
             return None

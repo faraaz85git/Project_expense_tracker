@@ -1,6 +1,5 @@
-import pytest
 from unittest.mock import MagicMock
-from ui_layer.app import main_menu,handle_login,handle_signup
+from app import main_menu,handle_login,handle_signup
 
 
 '''---------------Test fucntion for main_menu-------------'''
