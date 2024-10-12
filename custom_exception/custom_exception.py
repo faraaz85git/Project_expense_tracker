@@ -10,6 +10,23 @@ class InvalidCategory(Exception):
     def __init__(self,message=f"Category is unacceptable.it must be one of [transport,housing,food,clothing,other]"):
         self.message = message
         super().__init__(self.message)
+
+class SQLiteException(Exception):
+    def __init__(self,message:str="Sqlite Error."):
+        self.message=message
+        super().__init__(self.message)
+class InvalidAmount(Exception):
+    def __init__(self,message="Invalid amount."):
+        self.message=message
+        super().__init__(self.message)
+
+
+def validate_amount(expense):
+    try:
+        amount=float(expense.amount)
+    except ValueError:
+        raise InvalidAmount()
+
 def validate_expense(expense):
     try:
         datetime.strptime(expense.date,"%Y-%m-%d")

@@ -13,8 +13,11 @@ class User:
 
     def add_expense1(self,date,category,amount,description):
                 username = self.username
-                result=self.expense.add_expense(username,date,category,amount,description)
-                return result
+                try:
+                    result=self.expense.add_expense(username,date,category,amount,description)
+                    return result
+                except Exception:
+                    raise
 
     def show_all_expense2(self):
         data=self.expense.get_expense(self.username)

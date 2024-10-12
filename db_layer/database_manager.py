@@ -1,4 +1,5 @@
 from db_layer.connection import get_connection
+from custom_exception.custom_exception import SQLiteException
 class database_manager:
     def __init__(self):
         self.connection=get_connection()
@@ -45,12 +46,13 @@ class database_manager:
             if cursor.rowcount==1:
                 return True
             else:
-                return False
+                # return False
+                raise SQLiteException()
         except Exception as e:
             # print(f'SQLite error, {e}')
             print("An error occurred.")
-            return False
-
+            # return False
+            raise SQLiteException()
     def update_data(self,table_name,updates,conditions=None,parameters=[]):
         #updates is dict column_to_be_updated : new value
         columns_to_update=[f'{col}=? ' for col in updates.keys()]
@@ -81,8 +83,8 @@ class database_manager:
                 print('An error has occured.')
                 return False
         else:
-            print('-------No data is provided to update-------')
-            return False
+            # # print('-------No data is provided to update-------')
+            # return False
 
     def delete_data(self,table_name,conditions=None,parameters=[]):
         query=f'DELETE FROM {table_name} '

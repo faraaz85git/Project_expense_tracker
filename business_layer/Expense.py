@@ -8,8 +8,11 @@ class Expense:
         table_name = 'expenses'
         column = ['username', 'date', 'category', 'amount', 'description']
         values = [username, date, category, amount, description]
-        result = self.db_manager.insert_data(table_name, column, values)
-        return result
+        try:
+            result = self.db_manager.insert_data(table_name, column, values)
+            return result
+        except Exception:
+            raise
 
     def get_expense(self,username):
         table_name = 'expenses'
@@ -27,8 +30,9 @@ class Expense:
                 try:
                     filters['amount'] = float(filters['amount'])
                 except ValueError:
-                    print("Invalid amount entered. Amount will not be updated.")
-                    filters['amount'] = None
+                    raise ValueError("Invalid amount.")
+                    # print("Invalid amount entered. Amount will not be updated.")
+                    # filters['amount'] = None
 
             filters = {key: value for key, value in filters.items() if bool(value)}
             condition = ['username=?', 'expense_id=?']
@@ -38,8 +42,8 @@ class Expense:
                                                  parameters=parameter)
             return result
         except Exception as e:
-            print('An error ocurred')
-            return False
+            # print('An error ocurred')
+            raise
 
     def delete_expense(self,username,expense_id):
         table_name = 'expenses'
