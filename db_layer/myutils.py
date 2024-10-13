@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 from db_layer.connection import get_connection
+from custom_exception.custom_exception import BudgetNotSetException
 import bcrypt
 import re
 '''-------------------------utility functions----------------------------------'''
@@ -142,3 +143,7 @@ def validate_password(password):
         return False
 
 
+def validate_budget_date(start_date,end_date):
+    if end_date<start_date:
+        raise BudgetNotSetException(f"Invalid budget start date {start_date} should be smaller than or "
+                                    f"equal to end data {end_date}.")

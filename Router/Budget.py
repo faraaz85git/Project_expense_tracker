@@ -1,9 +1,10 @@
 from fastapi import APIRouter,status,Path,Query,HTTPException
 from Router.expense import user_dependency
 from business_layer.Budget import Budget
-from custom_exception.custom_exception import SQLiteException,NoRecordFoundException
+from custom_exception.custom_exception import SQLiteException,NoRecordFoundException,BudgetNotSetException
 from request_response_models.BudgetResponse import BudgetResponse
-
+from request_response_models.BudgetCreate import BudgetCreate
+from db_layer.myutils import validate_budget_date
 
 router=APIRouter(
     tags=["Budget"]
@@ -59,4 +60,23 @@ async def get_budget_status(user:user_dependency):
     except Exception:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="Internal server error.")
+
+
+@router.post("/budget",status_code=status.HTTP_204_NO_CONTENT)
+async def set_budget(user:user_dependency,
+                     new_budget:BudgetCreate):
+    try:
+        validate_budget_date(new_budget.start_date,new_budget.end_date)
+        new_budget = new_budget.model_dump()
+        new_budget.update({"username": user.username})
+        print(new_budget)
+        user.set_budget_by_category2(new_budget=new_budget)
+    except BudgetNotSetException as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=e.message)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=str(e))
+
+
 

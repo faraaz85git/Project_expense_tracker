@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from db_layer.database_manager import database_manager
 from business_layer.Budget import Budget
 from business_layer.Expense import Expense
-from custom_exception.custom_exception import InvalidCategoryException,NoRecordFoundException
+from custom_exception.custom_exception import InvalidCategoryException,NoRecordFoundException,BudgetNotSetException
 class User:
     def __init__(self,username,password,role):
         self.username=username
@@ -140,18 +140,24 @@ class User:
         else:
             print('No data to plot')
 
-    def set_budget_by_category2(self):
-        budget=Budget()
-        active_budget=budget.active_budget(self.username)
-        if active_budget:
-            start_date, end_date = active_budget[0][5], active_budget[0][6]
-            print(f'you already have an active budget that starts on {start_date} and ends on {end_date}.')
-        else:
-            prev_budget=budget.latest_budget(self.username)
-            if prev_budget:
-                prev_budget_end_date = prev_budget[6]
-                budget.set_budget(self.username,prev_budget_end_date=prev_budget_end_date)
-
+    def set_budget_by_category2(self,new_budget):
+       print(new_budget)
+       try:
+            budget=Budget()
+            active_budget=budget.active_budget(self.username)
+            if active_budget:
+                start_date, end_date = active_budget[0][5], active_budget[0][6]
+                raise BudgetNotSetException(f"Budget is not set as you already have active budget from {start_date} to {end_date}")
+                # print(f'you already have an active budget that starts on {start_date} and ends on {end_date}.')
             else:
-                print("You don't have any budget.Please set a budget.")
-                budget.set_budget(self.username,prev_budget_end_date=None)
+                prev_budget=budget.latest_budget(self.username)
+                if prev_budget:
+                    prev_budget_end_date = prev_budget[6]
+                    budget.set_budget(self.username,prev_budget_end_date=prev_budget_end_date,entries=new_budget)
+
+                else:
+                    print("You don't have any budget.Please set a budget.")
+                    budget.set_budget(self.username,prev_budget_end_date=None,entries=new_budget)
+
+       except Exception:
+           raise

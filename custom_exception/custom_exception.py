@@ -12,6 +12,11 @@ class UserAlreadyExistsException(Exception):
     def __init__(self,message="Username already exists."):
         self.message=message
         super().__init__(self.message)
+
+class BudgetNotSetException(Exception):
+    def __init__(self,message="Budget is not set."):
+        self.message=message
+        super().__init__(self.message)
 class UpdateException(Exception):
     def __init__(self,message="No data is provided to update"):
         self.message = message
