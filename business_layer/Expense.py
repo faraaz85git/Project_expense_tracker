@@ -18,11 +18,14 @@ class Expense:
         table_name = 'expenses'
         columns = ['expense_id', 'date', 'category', 'amount', 'description']
         condition = ['username=?']
-        data = self.db_manager.fetch_data(table_name,
-                                          columns=columns,
-                                          where_clause=condition,
-                                          parameters=[username])
-        return data
+        try:
+            data = self.db_manager.fetch_data(table_name,
+                                              columns=columns,
+                                              where_clause=condition,
+                                              parameters=[username])
+            return data
+        except Exception:
+            raise
 
     def update_expense(self,username,filters,expense_id):
         try:
@@ -46,11 +49,14 @@ class Expense:
             raise
 
     def delete_expense(self,username,expense_id):
-        table_name = 'expenses'
-        condition = ['expense_id=? ', 'username=?']
-        result = self.db_manager.delete_data(table_name=table_name, conditions=condition,
-                                             parameters=[expense_id,username])
-        if result:
-            print("Deletion sucessfull")
-        else:
-            print("Try again")
+        try:
+            table_name = 'expenses'
+            condition = ['expense_id=? ', 'username=?']
+            result = self.db_manager.delete_data(table_name=table_name, conditions=condition,
+                                                 parameters=[expense_id,username])
+            if result:
+                print("Deletion sucessfull")
+            else:
+                print("Try again")
+        except Exception:
+            raise

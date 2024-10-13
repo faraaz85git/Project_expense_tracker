@@ -1,37 +1,30 @@
 from fastapi import HTTPException
 from starlette import status
 from datetime import datetime
-class InvalidDate(Exception):
-    def __init__(self, message: str = "Invalid date. It should be in YYYY-MM-DD format."):
-        self.message = message  # Ensure the message is stored in the instance
+
+
+class NoRecordFoundException(Exception):
+    def __init__(self,message="No record found with given Id."):
+        self.message=message
         super().__init__(self.message)
 
-class InvalidCategory(Exception):
-    def __init__(self,message=f"Category is unacceptable.it must be one of [transport,housing,food,clothing,other]"):
+class UserAlreadyExistsException(Exception):
+    def __init__(self,message="Username already exists."):
+        self.message=message
+        super().__init__(self.message)
+class UpdateException(Exception):
+    def __init__(self,message="No data is provided to update"):
         self.message = message
         super().__init__(self.message)
-
+class InvalidCategoryException(Exception):
+    def __init__(self,message="No valid category is provided."
+                              "It must be one of housing,transport,food,clothing,other"):
+        self.message=message
+        super().__init__(self.message)
 class SQLiteException(Exception):
     def __init__(self,message:str="Sqlite Error."):
         self.message=message
         super().__init__(self.message)
-class InvalidAmount(Exception):
-    def __init__(self,message="Invalid amount."):
-        self.message=message
-        super().__init__(self.message)
 
 
-def validate_amount(expense):
-    try:
-        amount=float(expense.amount)
-    except ValueError:
-        raise InvalidAmount()
 
-def validate_expense(expense):
-    try:
-        datetime.strptime(expense.date,"%Y-%m-%d")
-    except Exception:
-        raise InvalidDate()
-    categories=["housing","transport","food","shopping","other"]
-    if expense.category not in categories:
-        raise InvalidCategory()

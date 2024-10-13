@@ -1,5 +1,5 @@
 from db_layer.connection import get_connection
-from custom_exception.custom_exception import SQLiteException
+from custom_exception.custom_exception import SQLiteException,UpdateException,NoRecordFoundException
 class database_manager:
     def __init__(self):
         self.connection=get_connection()
@@ -26,12 +26,11 @@ class database_manager:
         try:
             cursor=self.connection.cursor()
             cursor.execute(query,parameters)
-            # print(query)
             data=cursor.fetchall()
             return data
         except Exception as e:
-            print(f"An error occurred.")
-            return None
+            # print(f"An error occurred.")
+            raise SQLiteException()
 
     def insert_data(self,table_name,columns,values):
         column_str=(',').join(columns)
@@ -69,22 +68,30 @@ class database_manager:
 
             try:
                 cursor=self.connection.cursor()
-                # print(query)
+                print(query)
+                print(new_values+parameters)
                 cursor.execute(query,new_values+parameters)
                 self.connection.commit()
-                if cursor.rowcount!=0:
-                    return True
+                print(cursor.rowcount)
+                if cursor.rowcount == 0:
+                    raise NoRecordFoundException()
                 else:
-                    print('No record found with given id.')
-                    return False
+                    # print('No record found with given id.')
+                    # return False
+                   return True
 
-            except Exception as e:
+            except NoRecordFoundException:
+                print("raised recordd e")
+                raise
+            except Exception :
                 # print(f'SQLite error, {e}')
-                print('An error has occured.')
-                return False
+                # print('An error has occured.')
+                # return False
+                raise SQLiteException()
         else:
             # # print('-------No data is provided to update-------')
             # return False
+            raise UpdateException()
 
     def delete_data(self,table_name,conditions=None,parameters=[]):
         query=f'DELETE FROM {table_name} '
@@ -100,10 +107,14 @@ class database_manager:
             if cursor.rowcount!=0:
                 return True
             else:
-                print('No record found with given id.')
-                return False
+                # print('No record found with given id.')
+                # return False
+                raise NoRecordFoundException()
 
+        except NoRecordFoundException:
+            raise NoRecordFoundException()
         except Exception as e:
-            print('An error occured.')
-            # print(f'SQLite error, {e}')
-            return False
+            # print('An error occured.')
+            # # print(f'SQLite error, {e}')
+            # return False
+            raise SQLiteException()
