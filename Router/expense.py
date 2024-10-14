@@ -125,6 +125,10 @@ async def get_all_expense(user:user_dependency):
         except SQLiteException as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail="Internal server error.")
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Internal server error.")
+
 
 @router.post("/expenses",status_code=status.HTTP_204_NO_CONTENT)
 async def create_expense(expense:ExpenseCreate,user:user_dependency):
@@ -148,7 +152,7 @@ async def update_expense(expense:ExpenseUpdate,
         except ValueError as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=str(e))
         except NoRecordFoundException as e:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=e.message)
+            HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=e.message)
         except UpdateException as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=e.message)
         except SQLiteException as e:

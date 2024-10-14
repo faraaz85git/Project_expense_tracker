@@ -87,7 +87,7 @@ def create_token(user_name:str,
     except JWTError as e:
         raise
 
-@router.post("/login",response_model=Token)
+@router.post("/login",response_model=Token,status_code=status.HTTP_200_OK)
 async def login_for_token(form_data:Annotated[OAuth2PasswordRequestForm,
                 Depends()]):
     try:
