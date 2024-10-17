@@ -2,11 +2,13 @@ from db_layer.database_manager import database_manager
 from db_layer.myutils import curr_date_str,get_float_input,get_date_input
 from custom_exception.custom_exception import NoRecordFoundException,BudgetNotSetException
 class Budget:
-    def __init__(self):
-        self.db_manager=database_manager()
+    def __init__(self,logger):
+        self.logger=logger
+        self.db_manager=database_manager(logger=logger)
 
     def active_budget(self,username):
        try:
+            self.logger.log(message="Fetching active budget.")
             curr_date = curr_date_str()
             table_name = 'budgets'
             columns = ['housing', 'transport', 'food', 'clothing', 'other', 'start_date', 'end_date']
@@ -16,7 +18,8 @@ class Budget:
                                                        parameters=parameter)
             return active_budget
 
-       except Exception:
+       except Exception as e:
+           self.logger.log(message=str(e),level="error")
            raise
 
     def latest_budget(self,username):
@@ -35,7 +38,8 @@ class Budget:
                 return prev_budget
             else:
                 return None
-        except Exception:
+        except Exception as e:
+            self.logger.log(message=str(e),level="error")
             raise
 
 

@@ -1,8 +1,9 @@
 from db_layer.database_manager import database_manager
-
+from custom_exception.custom_exception import SQLiteException
 class Expense:
-    def __init__(self):
-        self.db_manager=database_manager()
+    def __init__(self,logger):
+        self.db_manager=database_manager(logger=logger)
+        self.logger=logger
 
     def add_expense(self,username,date, category, amount, description):
         table_name = 'expenses'
@@ -24,7 +25,10 @@ class Expense:
                                               where_clause=condition,
                                               parameters=[username])
             return data
-        except Exception:
+        except SQLiteException:
+            raise
+        except Exception as e:
+            self.logger.log(message=str(e),level="error")
             raise
 
     def update_expense(self,username,filters,expense_id):
@@ -33,6 +37,7 @@ class Expense:
                 try:
                     filters['amount'] = float(filters['amount'])
                 except ValueError:
+                    self.logger.log(message="Invalid amount.",level="error")
                     raise ValueError("Invalid amount.")
                     # print("Invalid amount entered. Amount will not be updated.")
                     # filters['amount'] = None
@@ -55,8 +60,10 @@ class Expense:
             result = self.db_manager.delete_data(table_name=table_name, conditions=condition,
                                                  parameters=[expense_id,username])
             if result:
+                self.logger.log(message="Deletion success.")
                 print("Deletion sucessfull")
             else:
+                self.logger.log(message="Deletion failed.")
                 print("Try again")
         except Exception:
             raise

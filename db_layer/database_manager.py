@@ -1,7 +1,8 @@
 from db_layer.connection import get_connection
 from custom_exception.custom_exception import SQLiteException,UpdateException,NoRecordFoundException
 class database_manager:
-    def __init__(self):
+    def __init__(self,logger):
+        self.logger=logger
         self.connection=get_connection()
 
     def create_table(self,table_name,schema):
@@ -24,11 +25,14 @@ class database_manager:
             condition_str=(f'{operator}').join(where_clause)
             query+=f' WHERE {condition_str}'
         try:
+            self.logger.log("Data is being fetched from db")
             cursor=self.connection.cursor()
             cursor.execute(query,parameters)
             data=cursor.fetchall()
+            self.logger.log(message="Data is fetched successfully.")
             return data
         except Exception as e:
+            self.logger.log(message=f"{str(e)}",level="error")
             # print(f"An error occurred.")
             raise SQLiteException()
 
@@ -43,14 +47,19 @@ class database_manager:
 
             self.connection.commit()
             if cursor.rowcount==1:
+                self.logger.log(message="Record inserted successfully.")
                 return True
             else:
                 # return False
+                self.logger.log(message="Record is not inserted",level="error")
                 raise SQLiteException()
+        except SQLiteException:
+            raise
         except Exception as e:
             # print(f'SQLite error, {e}')
-            print("An error occurred.")
+            # print("An error occurred.")
             # return False
+            self.logger.log(message=str(e),level="error")
             raise SQLiteException()
     def update_data(self,table_name,updates,conditions=None,parameters=[]):
         #updates is dict column_to_be_updated : new value
@@ -74,21 +83,24 @@ class database_manager:
                 self.connection.commit()
                 print(cursor.rowcount)
                 if cursor.rowcount == 0:
+                    self.logger.log(message="No record is found given id.", level="error")
                     raise NoRecordFoundException()
                 else:
                     # print('No record found with given id.')
                     # return False
                    return True
 
-            except NoRecordFoundException:
-                print("raised recordd e")
-                raise
-            except Exception :
+            except NoRecordFoundException as e:
+                raise NoRecordFoundException()
+            except Exception as e:
+                self.logger.log(message=str(e),level="error")
+
                 # print(f'SQLite error, {e}')
                 # print('An error has occured.')
                 # return False
                 raise SQLiteException()
         else:
+            self.logger.log(message="No data is provided to update", level="error")
             # # print('-------No data is provided to update-------')
             # return False
             raise UpdateException()
@@ -114,6 +126,7 @@ class database_manager:
         except NoRecordFoundException:
             raise NoRecordFoundException()
         except Exception as e:
+            self.logger.log(message=str(e),level="error")
             # print('An error occured.')
             # # print(f'SQLite error, {e}')
             # return False

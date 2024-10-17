@@ -21,8 +21,8 @@ class UserCreate(BaseModel):
             return value
 
     @field_validator("password")
-    def validate_pass_word(cls,value):
-        if validate_password(str(value)):
+    def validate_pass_word(cls,value) :
+        if validate_password(str(value)) and type(value)==int:
             return value
         else:
             raise ValueError("Invalid password.Password must contain at least 10 numbers")

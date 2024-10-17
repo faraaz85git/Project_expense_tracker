@@ -5,12 +5,13 @@ from business_layer.Budget import Budget
 from business_layer.Expense import Expense
 from custom_exception.custom_exception import InvalidCategoryException,NoRecordFoundException,BudgetNotSetException
 class User:
-    def __init__(self,username,password,role):
+    def __init__(self,logger,username,password=None,role="user"):
         self.username=username
         self.password=password
         self.role=role
-        self.expense=Expense()
-        self.db_manager=database_manager()
+        self.expense=Expense(logger=logger)
+        self.db_manager=database_manager(logger=logger)
+        self.logger=logger
 
     def add_expense1(self,date,category,amount,description):
                 username = self.username
@@ -28,16 +29,19 @@ class User:
             raise
 
     def update_expense2(self,expense_id):
-        print("Enter new values for the expense. Press enter to skip a field.")
-        filters = {
-            'date': input("New date (YYYY-MM-DD): ").strip(),
-            'category': update_category().strip(),
-            'amount': input("New amount: ").strip(),
-            'description': input("New description: ").strip()
-        }
+        try:
+            print("Enter new values for the expense. Press enter to skip a field.")
+            filters = {
+                'date': input("New date (YYYY-MM-DD): ").strip(),
+                'category': update_category().strip(),
+                'amount': input("New amount: ").strip(),
+                'description': input("New description: ").strip()
+            }
 
-        result=self.expense.update_expense(self.username,filters,expense_id)
-        return result
+            result=self.expense.update_expense(self.username,filters,expense_id)
+            return result
+        except Exception:
+            raise
 
     def delete_expense2(self,expense_id):
         try:
@@ -58,21 +62,26 @@ class User:
                 data=self.db_manager.fetch_data(table_name=table_name,columns=columns,where_clause=condition,parameters=parameter)
                 if data:
                     expense_data=[e for e in data if e[2] in filters]
-                    if expense_data:
-                        # display(expense_data)
-                        return expense_data
-                    else:
-                        # print('------No data for specified category------')
-                        raise NoRecordFoundException("No expense is found of specified category.")
+                    return expense_data
+                    # if expense_data:
+                    #     # display(expense_data)
+                    #     return expense_data
+                    # else:
+                    #     # print('------No data for specified category------')
+                    #     # raise NoRecordFoundException("No expense is found of specified category.")
                 else:
-                    raise NoRecordFoundException("No expense is found of specified category.")
-         except Exception:
+                    # raise NoRecordFoundException("No expense is found of specified category.")
+                    return data
+         except Exception as e:
+             self.logger.log(message=str(e),level="error")
              raise
     def show_budget_status_by_category2(self):
         try:
-            budget=Budget()
+            self.logger.log(message="Fetching active or latest budget.")
+            budget=Budget(logger=self.logger)
             latest_budget=budget.latest_budget(self.username)
             if latest_budget:
+                self.logger.log(message="Latest budget is fetched successfully.")
                 start_date = latest_budget[5]
                 end_date = latest_budget[6]
                 print(f"Your budget start on {start_date} and ends on {end_date}")
@@ -95,6 +104,7 @@ class User:
                     if (data[1]>=start_date and data[1]<=end_date):
                         amount_spend[data[2]]+=data[3]
 
+                self.logger.log(message="Generating budget status.")
                 budget_status = {
                     'housing': budget_amount['housing'] - amount_spend['housing'],
                     'transport': budget_amount['transport'] - amount_spend['transport'],
@@ -102,10 +112,11 @@ class User:
                     'clothing': budget_amount['clothing'] - amount_spend['clothing'],
                     'other': budget_amount['other'] - amount_spend['other']
                 }
-
+                self.logger.log(message="Generated budget status.")
                 return [budget_amount,amount_spend,budget_status,start_date,end_date]
 
             else:
+                self.logger.log(message="No budget to show budget status.")
                 # print('------NO BUDGET TO SHOW BUDGET STATUS------')
                 return None
         except Exception:
@@ -143,7 +154,7 @@ class User:
     def set_budget_by_category2(self,new_budget):
        print(new_budget)
        try:
-            budget=Budget()
+            budget=Budget(logger=self.logger)
             active_budget=budget.active_budget(self.username)
             if active_budget:
                 start_date, end_date = active_budget[0][5], active_budget[0][6]

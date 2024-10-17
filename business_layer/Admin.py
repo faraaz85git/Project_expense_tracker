@@ -3,14 +3,13 @@ from business_layer.user import User
 
 class Admin(User):
     def show_all_user1(self):
-        table_name = 'users'
-        columns = ['user_id', 'username', 'role']
-        result = self.db_manager.fetch_data(table_name=table_name, columns=columns)
-        if result:
-            for u in result:
-                print(u)
-        else:
-            print('No user')
+        try:
+            table_name = 'users'
+            columns = ['user_id', 'username', 'role']
+            result = self.db_manager.fetch_data(table_name=table_name, columns=columns)
+            return result
+        except Exception:
+            raise
 
     def delete_user1(self):
         print('THESE ARE USERS')
@@ -43,15 +42,19 @@ class Admin(User):
     #     return result
 
     def show_all_users_expenses1(self):
-        table_name = 'expenses'
-        columns = ['expense_id', 'username', 'date', 'category', 'amount', 'description']
-        data = self.db_manager.fetch_data(table_name, columns=columns)
-        if data:
-            print(f"{'expense_id':<15} {'username':<15} {'date':<15} {'category':<15} {'amount':<15} {'description':<15}")
-            print('-' * 90)
-            for e in data:
-                expense_id, username, date, category, amount, description = e
-                print(f"{expense_id:<15} {username:<15} {date:<15} {category:<15} {amount:<15} {description:<100}")
+        try:
+            table_name = 'expenses'
+            columns = ['expense_id', 'username', 'date', 'category', 'amount', 'description']
+            data = self.db_manager.fetch_data(table_name, columns=columns)
             return data
-        else:
-            print('No data to show')
+            # if data:
+            #     print(f"{'expense_id':<15} {'username':<15} {'date':<15} {'category':<15} {'amount':<15} {'description':<15}")
+            #     print('-' * 90)
+            #     for e in data:
+            #         expense_id, username, date, category, amount, description = e
+            #         print(f"{expense_id:<15} {username:<15} {date:<15} {category:<15} {amount:<15} {description:<100}")
+            #     return data
+            # else:
+            #     print('No data to show')
+        except Exception:
+            raise

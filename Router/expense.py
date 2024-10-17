@@ -117,6 +117,7 @@ valid_category=["housing","transport","food","clothing","other"]
 @router.get("/expenses",status_code=status.HTTP_200_OK,response_model=list[ExpenseResponse])
 async def get_all_expense(user:user_dependency):
         try:
+            user.logger.log(message="Request is processing")
             data=user.show_all_expense2()
             result=[]
             for d in data:
@@ -125,82 +126,101 @@ async def get_all_expense(user:user_dependency):
         except SQLiteException as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail="Internal server error.")
-        except Exception:
+        except Exception as e:
+            user.logger.log(message=str(e),level="error")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail="Internal server error.")
 
 
-@router.post("/expenses",status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/expense",status_code=status.HTTP_201_CREATED)
 async def create_expense(expense:ExpenseCreate,user:user_dependency):
     try:
         user.add_expense1(**expense.model_dump())
+        user.logger.log(message="Request is processing")
+        return {"status":"Expense created successfully."}
     except SQLiteException as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="Internal server error.")
     except Exception as e:
+        user.logger.log(message=str(e),level="error")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="Internal server error")
 
 
-@router.patch("/expenses/{expense_id}",status_code=status.HTTP_204_NO_CONTENT)
+@router.patch("/expense/{expense_id}",status_code=status.HTTP_200_OK)
 async def update_expense(expense:ExpenseUpdate,
                          user:user_dependency,
                          expense_id:int=Path(gt=0)):
 
         try:
+            user.logger.log(message="Request is processing.")
             user.expense.update_expense(username=user.username,filters=expense.model_dump(),expense_id=expense_id)
+            return {"updated":"success"}
         except ValueError as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=str(e))
         except NoRecordFoundException as e:
-            HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=e.message)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=e.message)
         except UpdateException as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=e.message)
         except SQLiteException as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail=str(e))
         except Exception as e:
+            user.logger.log(message=str(e),level="error")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail=str(e))
 
-@router.delete("/expenses/{expense_id}",status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/expense/{expense_id}",status_code=status.HTTP_204_NO_CONTENT)
 async def delete_expense(user:user_dependency,
                          expense_id:int=Path(gt=0)):
     try:
+        user.logger.log(message="Request is processing.")
         user.delete_expense2(expense_id=expense_id)
     except NoRecordFoundException as e:
+        user.logger.log(message=f"No record is found with {expense_id}",level="error")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=e.message)
     except SQLiteException as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="Internal server error.")
-    except Exception:
+    except Exception as e:
+        user.logger.log(message=str(e),level="error")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="Internal server error.")
 
-@router.get("/expense/categories/",status_code=status.HTTP_200_OK)
+@router.get("/expenses/categories/",status_code=status.HTTP_200_OK)
 async def get_expense_by_category(user:user_dependency,
-                                  categories:list[str]=Query(min_length=1)):
-
-        categories=[category for category in categories if category in valid_category]
+                                  categories:list[str]=Query(default=[])):
         try:
-            if categories:
-                expenses=user.show_expense_by_category2(categories)
-                result=[]
-                for expense in expenses:
-                    result.append(ExpenseResponse(exp_id=expense[0],
-                                                  date=expense[1],
-                                                  category=expense[2],
-                                                  amount=expense[3],
-                                                  description=expense[4]))
+            user.logger.log(message="Request is processing.")
+            if not categories:
+                user.logger.log(message="No category is provided. Fetching all category.")
+                data = user.show_all_expense2()
+                result = []
+                for d in data:
+                    result.append(ExpenseResponse(exp_id=d[0], date=d[1], category=d[2], amount=d[3], description=d[4]))
                 return result
             else:
-                raise InvalidCategoryException()
+                categories = [category for category in categories if category in valid_category]
+                if categories:
+                    user.logger.log(message="Valid category is provided. Fetching category-wise data.")
+                    expenses=user.show_expense_by_category2(categories)
+                    result=[]
+                    for expense in expenses:
+                        result.append(ExpenseResponse(exp_id=expense[0],
+                                                      date=expense[1],
+                                                      category=expense[2],
+                                                      amount=expense[3],
+                                                      description=expense[4]))
+                    return result
+                else:
+                    raise InvalidCategoryException()
 
         except InvalidCategoryException as e:
+            user.logger.log(message="Invalid category is provided.",level="error")
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=e.message)
-        except NoRecordFoundException as e:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=e.message)
         except SQLiteException as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail=e.message)
-        except Exception:
+        except Exception as e:
+            user.logger.log(message=str(e), level="error")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail="Internal server error.")
 
 @router.get("/user",status_code=status.HTTP_200_OK)
