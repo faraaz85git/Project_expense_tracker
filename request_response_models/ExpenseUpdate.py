@@ -1,7 +1,6 @@
-from pydantic import BaseModel,Field,field_validator
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from datetime import datetime
-
 
 
 class ExpenseUpdate(BaseModel):
@@ -17,11 +16,9 @@ class ExpenseUpdate(BaseModel):
                 "date": "2024-08-18",
                 "category": "transport",
                 "amount": 1000,
-                "description": ""
+                "description": "",
             }
         }
-
-
 
     @field_validator("date")
     def validate_date(cls, value):
@@ -35,7 +32,9 @@ class ExpenseUpdate(BaseModel):
     def validate_category(cls, value):
         categories = ["housing", "transport", "food", "clothing", "other"]
         if value not in categories:
-            raise ValueError("Invalid category. Must be one of: housing, transport, food, clothing, other.")
+            raise ValueError(
+                "Invalid category. Must be one of: housing, transport, food, clothing, other."
+            )
         return value
 
     @field_validator("amount")
@@ -45,4 +44,3 @@ class ExpenseUpdate(BaseModel):
         except ValueError:
             raise ValueError("Amount must be valid integer or float.")
         return value
-

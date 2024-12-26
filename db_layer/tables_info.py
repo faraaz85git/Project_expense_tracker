@@ -1,10 +1,10 @@
-user_table_name='users'
-users_schema = '''(
+user_table_name = "users"
+users_schema = """(
 user_id INTEGER PRIMARY KEY AUTOINCREMENT,
 username TEXT NOT NULL UNIQUE,
 password TEXT NOT NULL,
 role TEXT NOT NULL)
-'''
+"""
 
 
 expenses_schema = """
@@ -17,7 +17,7 @@ description TEXT)
 """
 
 
-budget_table_name='budgets'
+budget_table_name = "budgets"
 budgets_schema = """
 budget_id INTEGER PRIMARY KEY AUTOINCREMENT,
 username TEXT NOT NULL,
@@ -32,7 +32,5 @@ end_date DATE NOT NULL)
 
 
 def create_table(table_name, schema):
-        create_table_sql = f"CREATE TABLE IF NOT EXISTS {table_name} {schema}"
-        print(create_table_sql)
-
-
+    create_table_sql = f"CREATE TABLE IF NOT EXISTS {table_name} {schema}"
+    print(create_table_sql)

@@ -4,29 +4,31 @@ from business_layer.user import User
 class Admin(User):
     def show_all_user1(self):
         try:
-            table_name = 'users'
-            columns = ['user_id', 'username', 'role']
+            table_name = "users"
+            columns = ["user_id", "username", "role"]
             result = self.db_manager.fetch_data(table_name=table_name, columns=columns)
             return result
         except Exception:
             raise
 
     def delete_user1(self):
-        print('THESE ARE USERS')
+        print("THESE ARE USERS")
         self.show_all_user1()
-        user_id = input('ENTER USER_ID TO DELETE A USER')
+        user_id = input("ENTER USER_ID TO DELETE A USER")
         try:
             user_id = int(user_id)
         except ValueError:
-            print('Id must a valid integer')
+            print("Id must a valid integer")
             return False
-        table_name = 'users'
-        condition = ['user_id=? ']
-        result = self.db_manager.delete_data(table_name=table_name, conditions=condition, parameters=[user_id])
+        table_name = "users"
+        condition = ["user_id=? "]
+        result = self.db_manager.delete_data(
+            table_name=table_name, conditions=condition, parameters=[user_id]
+        )
         if result:
-            print('Deletion sucessfull')
+            print("Deletion sucessfull")
         else:
-            print('Not deleted. Please provide valid id')
+            print("Not deleted. Please provide valid id")
 
     # def delete_user(self):
     #     print('THESE ARE USERS')
@@ -43,8 +45,15 @@ class Admin(User):
 
     def show_all_users_expenses1(self):
         try:
-            table_name = 'expenses'
-            columns = ['expense_id', 'username', 'date', 'category', 'amount', 'description']
+            table_name = "expenses"
+            columns = [
+                "expense_id",
+                "username",
+                "date",
+                "category",
+                "amount",
+                "description",
+            ]
             data = self.db_manager.fetch_data(table_name, columns=columns)
             return data
             # if data:

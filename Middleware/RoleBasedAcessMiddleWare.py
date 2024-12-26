@@ -1,13 +1,12 @@
-from fastapi import FastAPI, Path, Request
+from fastapi import  Request
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.middleware.base import BaseHTTPMiddleware
 from Routes.ProjectRoutes import role_to_routes, private_routes
 from logger.Logger import Logger
 import time
-from starlette.responses import Response
 from Router.Auth import SECRET_KEY, ALGORITHM
-from jose import jwt, JWTError
-from fastapi import FastAPI, status, HTTPException
+from jose import jwt
+from fastapi import  status, HTTPException
 
 
 def logger_obj(request):

@@ -1,57 +1,68 @@
 from db_layer.connection import get_connection
-from custom_exception.custom_exception import SQLiteException,UpdateException,NoRecordFoundException
-class database_manager:
-    def __init__(self,logger):
-        self.logger=logger
-        self.connection=get_connection()
+from custom_exception.custom_exception import (
+    SQLiteException,
+    UpdateException,
+    NoRecordFoundException,
+)
 
-    def create_table(self,table_name,schema):
-        query=f"CREATE TABLE IF NOT EXISTS {table_name} {schema}"
+
+class database_manager:
+    def __init__(self, logger):
+        self.logger = logger
+        self.connection = get_connection()
+
+    def create_table(self, table_name, schema):
+        query = f"CREATE TABLE IF NOT EXISTS {table_name} {schema}"
         try:
-            cursor=self.connection.cursor()
+            cursor = self.connection.cursor()
             cursor.execute(query)
             self.connection.commit()
         except Exception as e:
             # print(f'SQLite error, {e}')
             print("An error occurred.")
 
-    def fetch_data(self,table_name,columns="*",
-                   where_clause=None,
-                   operator=' AND ',
-                   parameters=()):
-        columns=(',').join(columns)
-        query=f'SELECT {columns} FROM {table_name}'
+    def fetch_data(
+        self,
+        table_name,
+        columns="*",
+        where_clause=None,
+        operator=" AND ",
+        parameters=(),
+    ):
+        columns = (",").join(columns)
+        query = f"SELECT {columns} FROM {table_name}"
         if where_clause:
-            condition_str=(f'{operator}').join(where_clause)
-            query+=f' WHERE {condition_str}'
+            condition_str = (f"{operator}").join(where_clause)
+            query += f" WHERE {condition_str}"
         try:
             self.logger.log("Data is being fetched from db")
-            cursor=self.connection.cursor()
-            cursor.execute(query,parameters)
-            data=cursor.fetchall()
+            cursor = self.connection.cursor()
+            cursor.execute(query, parameters)
+            self.logger.log(message=f"{query} {parameters} ")
+            data = cursor.fetchall()
             self.logger.log(message="Data is fetched successfully.")
             return data
         except Exception as e:
-            self.logger.log(message=f"{str(e)}",level="error")
+            self.logger.log(message=f"{str(e)}", level="error")
             # print(f"An error occurred.")
             raise SQLiteException()
 
-    def insert_data(self,table_name,columns,values):
-        column_str=(',').join(columns)
-        placeholder=(',').join(['?']*len(columns))
-        query=f'INSERT INTO {table_name} ({column_str}) VALUES ({placeholder}) '
+    def insert_data(self, table_name, columns, values):
+        column_str = (",").join(columns)
+        placeholder = (",").join(["?"] * len(columns))
+        query = f"INSERT INTO {table_name} ({column_str}) VALUES ({placeholder}) "
         try:
-            cursor=self.connection.cursor()
+            cursor = self.connection.cursor()
             # print(query,values)
-            cursor.execute(query,values)
+            cursor.execute(query, values)
 
             self.connection.commit()
-            if cursor.rowcount==1:
+            if cursor.rowcount == 1:
                 self.logger.log(message="Record inserted successfully.")
                 return True
             else:
                 # return False
-                self.logger.log(message="Record is not inserted",level="error")
+                self.logger.log(message="Record is not inserted", level="error")
                 raise SQLiteException()
         except SQLiteException:
             raise
@@ -59,41 +70,44 @@ class database_manager:
             # print(f'SQLite error, {e}')
             # print("An error occurred.")
             # return False
-            self.logger.log(message=str(e),level="error")
+            self.logger.log(message=str(e), level="error")
             raise SQLiteException()
-    def update_data(self,table_name,updates,conditions=None,parameters=[]):
-        #updates is dict column_to_be_updated : new value
-        columns_to_update=[f'{col}=? ' for col in updates.keys()]
+
+    def update_data(self, table_name, updates, conditions=None, parameters=[]):
+        # updates is dict column_to_be_updated : new value
+        columns_to_update = [f"{col}=? " for col in updates.keys()]
         if columns_to_update:
-            columns_to_update=', '.join(columns_to_update)
-            query=f'UPDATE {table_name} SET {columns_to_update}'
+            columns_to_update = ", ".join(columns_to_update)
+            query = f"UPDATE {table_name} SET {columns_to_update}"
 
             if conditions:
-                conditions_str=' AND '.join(conditions)
-                query+=f' WHERE {conditions_str}'
+                conditions_str = " AND ".join(conditions)
+                query += f" WHERE {conditions_str}"
                 # print(query)
 
-            new_values=list(updates.values())
+            new_values = list(updates.values())
 
             try:
-                cursor=self.connection.cursor()
+                cursor = self.connection.cursor()
                 print(query)
-                print(new_values+parameters)
-                cursor.execute(query,new_values+parameters)
+                print(new_values + parameters)
+                cursor.execute(query, new_values + parameters)
                 self.connection.commit()
                 print(cursor.rowcount)
                 if cursor.rowcount == 0:
-                    self.logger.log(message="No record is found given id.", level="error")
+                    self.logger.log(
+                        message="No record is found given id.", level="error"
+                    )
                     raise NoRecordFoundException()
                 else:
                     # print('No record found with given id.')
                     # return False
-                   return True
+                    return True
 
             except NoRecordFoundException as e:
                 raise NoRecordFoundException()
             except Exception as e:
-                self.logger.log(message=str(e),level="error")
+                self.logger.log(message=str(e), level="error")
 
                 # print(f'SQLite error, {e}')
                 # print('An error has occured.')
@@ -105,18 +119,18 @@ class database_manager:
             # return False
             raise UpdateException()
 
-    def delete_data(self,table_name,conditions=None,parameters=[]):
-        query=f'DELETE FROM {table_name} '
-        condition_str=(' AND ').join(conditions)
-        query+=f' WHERE {condition_str} '
+    def delete_data(self, table_name, conditions=None, parameters=[]):
+        query = f"DELETE FROM {table_name} "
+        condition_str = (" AND ").join(conditions)
+        query += f" WHERE {condition_str} "
 
         try:
             # print(query)
-            cursor=self.connection.cursor()
+            cursor = self.connection.cursor()
 
-            cursor.execute(query,parameters)
+            cursor.execute(query, parameters)
             self.connection.commit()
-            if cursor.rowcount!=0:
+            if cursor.rowcount != 0:
                 return True
             else:
                 # print('No record found with given id.')
@@ -126,8 +140,53 @@ class database_manager:
         except NoRecordFoundException:
             raise NoRecordFoundException()
         except Exception as e:
-            self.logger.log(message=str(e),level="error")
+            self.logger.log(message=str(e), level="error")
             # print('An error occured.')
             # # print(f'SQLite error, {e}')
             # return False
             raise SQLiteException()
+
+    def fetch_data_paginated(
+            self,
+            table_name: str,
+            columns: list[str] | str = "*",
+            where_clause: list[str] | None = None,
+            operator: str = " AND ",
+            parameters: tuple = (),
+            limit: int | None=10,
+            offset: int | None = 0,
+            date_column: str | None = 'date'
+    ):
+        if isinstance(columns, list):
+            columns = ", ".join(columns)
+
+        query = f"SELECT {columns} FROM {table_name}"
+
+        if where_clause:
+            condition_str = f" {operator} ".join([f"{clause} " for clause in where_clause])
+            query += f" WHERE {condition_str}"
+
+        # Sort by date in descending order
+        if date_column:
+            query += f" ORDER BY {date_column} DESC"
+
+        # Add LIMIT and OFFSET for pagination
+        if limit is not None:
+            query += f" LIMIT {limit}"
+        if offset is not None:
+            query += f" OFFSET {offset}"
+
+        try:
+
+            self.logger.log(f"Executed Query: {query}, Parameters: {parameters}")
+            self.logger.log("Data is being fetched from the database.")
+            cursor = self.connection.cursor()  # Open cursor
+            cursor.execute(query, parameters)
+            self.logger.log(f"Executed Query: {query}, Parameters: {parameters}")
+            data = cursor.fetchall()
+            cursor.close()  # Close cursor
+            self.logger.log("Data fetched successfully.")
+            return data
+        except Exception as e:
+            self.logger.log(message=f"Database fetch error: {str(e)}", level="error")
+            raise SQLiteException(f"Error fetching data from {table_name}: {e}")

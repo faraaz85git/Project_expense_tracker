@@ -1,24 +1,24 @@
-
 import pytest
 from unittest.mock import MagicMock
 from business_layer.user import User
 
-class TestUser():
+
+class TestUser:
     def setup_method(self):
-        self.expense=MagicMock()
-        self.db_manager=MagicMock()
+        self.expense = MagicMock()
+        self.db_manager = MagicMock()
 
-    def test_add_expense1_invalid_username(self,monkeypatch):
-        #arrange
-        self.expense.add_expense=MagicMock(return_value=False)
+    def test_add_expense1_invalid_username(self, monkeypatch):
+        # arrange
+        self.expense.add_expense = MagicMock(return_value=False)
 
-        #act
-        monkeypatch.setattr('business_layer.user.Expense',lambda : self.expense)
-        user_obj=User('invalid_username','valid_password','valid_role')
-        result=user_obj.add_expense1('2024-08-01','housing',1200,'no description')
+        # act
+        monkeypatch.setattr("business_layer.user.Expense", lambda: self.expense)
+        user_obj = User("invalid_username", "valid_password", "valid_role")
+        result = user_obj.add_expense("2024-08-01", "housing", 1200, "no description")
 
-        #assert
-        assert result==False
+        # assert
+        assert result == False
 
     # def test_add_expense1_invalid_amount(self, monkeypatch):
     #
@@ -104,8 +104,3 @@ class TestUser():
     #     assert result == None
     #     # cd..
     #
-
-
-
-
-

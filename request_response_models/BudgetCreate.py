@@ -1,26 +1,27 @@
-from pydantic import field_validator, BaseModel,Field
+from pydantic import field_validator, BaseModel, Field
 from datetime import datetime
 
+
 class BudgetCreate(BaseModel):
-    housing:float=Field(gt=0,description="Budget for housing.")
-    transport:float=Field(gt=0,description="Budget for housing.")
-    food:float=Field(gt=0,description="Budget for food.")
-    clothing:float=Field(gt=0,description="Budget for clothing.")
-    other:float=Field(gt=0,description="Budget for other.")
-    start_date:str=Field(description="Start date of budget.")
-    end_date:str=Field(description="End date of budget.")
+    housing: float = Field(gt=0, description="Budget for housing.")
+    transport: float = Field(gt=0, description="Budget for housing.")
+    food: float = Field(gt=0, description="Budget for food.")
+    clothing: float = Field(gt=0, description="Budget for clothing.")
+    other: float = Field(gt=0, description="Budget for other.")
+    start_date: str = Field(description="Start date of budget.")
+    end_date: str = Field(description="End date of budget.")
 
     class Config:
-        extra="forbid"
-        json_schema_extra={
-            "example":{
-                "housing":1200.0,
+        extra = "forbid"
+        json_schema_extra = {
+            "example": {
+                "housing": 1200.0,
                 "transport": 1200.0,
                 "food": 1200.0,
                 "clothing": 1200.0,
                 "other": 1200.0,
-                "start_date":"2024-12-12",
-                "end_date": "2024-12-12"
+                "start_date": "2024-12-12",
+                "end_date": "2024-12-12",
             }
         }
 
